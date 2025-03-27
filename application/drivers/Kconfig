@@ -1,0 +1,5 @@
+# rsource "display/Kconfig"
+# rsource "kscan/Kconfig"
+menu "Drivers"
+    rsource "sensor/Kconfig" 
+endmenu

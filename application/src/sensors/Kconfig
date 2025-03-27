@@ -1,0 +1,3 @@
+module = AW_SENSORS
+module-str = AW_SENSORS
+source "subsys/logging/Kconfig.template.log_config"

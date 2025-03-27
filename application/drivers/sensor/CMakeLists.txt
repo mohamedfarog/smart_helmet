@@ -1,0 +1,1 @@
+add_subdirectory_ifdef(CONFIG_BMI270_PLUS bmi270)

@@ -1,0 +1,8 @@
+board:
+  name: shiarsband
+  vendor: nordic
+  socs:
+  - name: nrf5340
+    variants:
+    - name: ns
+      cpucluster: cpuapp

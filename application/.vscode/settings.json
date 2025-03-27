@@ -1,0 +1,37 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/home/farog/ros2_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages",
+        "/home/farog/ros2_ws/install/ros2_aruco/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_visualization/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_transform/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_ros2/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_driver/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/home/farog/ros2_ws/install/ros2_aruco_interfaces/local/lib/python3.10/dist-packages",
+        "/home/farog/ros2_ws/install/ros2_aruco/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_visualization/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_transform/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_ros2/lib/python3.10/site-packages",
+        "/home/farog/Downloads/ros2_ws1/install/dwm1001_driver/lib/python3.10/site-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "files.associations": {
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "functional": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "variant": "c",
+        "stdlib.h": "c",
+        "crypto.h": "c",
+        "stddef.h": "c",
+        "errno.h": "c"
+    }
+}

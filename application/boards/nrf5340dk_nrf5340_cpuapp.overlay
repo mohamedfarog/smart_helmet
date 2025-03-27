@@ -1,0 +1,229 @@
+
+&pinctrl {
+    // Set to I2C pins that the sensors are connected to
+    i2c1_default: i2c1_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 1, 2)>,
+                <NRF_PSEL(TWIM_SCL, 1, 3)>;
+        };
+    };
+
+    i2c1_sleep: i2c1_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 1, 2)>,
+                <NRF_PSEL(TWIM_SCL, 1, 3)>;
+            low-power-enable;
+        };
+    };
+
+    // Set to I2C pins that the touch screen is connected to
+    i2c2_default: i2c2_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 1, 13)>,
+                <NRF_PSEL(TWIM_SCL, 1, 14)>;
+        };
+    };
+
+    i2c2_sleep: i2c2_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 1, 13)>,
+                <NRF_PSEL(TWIM_SCL, 1, 14)>;
+            low-power-enable;
+        };
+    };
+
+};
+
+/ {
+    chosen {
+        nordic,pm-ext-flash = &mx25r64;
+    };
+    
+    aliases {
+        sw-top-right = &button1;
+        sw-top-left = &button0;
+        sw-bottom-right = &button3;
+        sw-bottom-left = &button2;
+    };
+
+    vbatt {
+        compatible = "voltage-divider";
+        io-channels = <&adc 7>;
+        output-ohms = <220000>;
+        full-ohms = <(1500000 + 220000)>;
+        power-gpios = <&gpio1 10 0>;
+        zephyr,deferred-init;
+    };
+
+    /* Joystick */
+    joy_x{
+        io-channels = <&adc 0>;
+    };
+    joy_y{
+        io-channels = <&adc 1>;
+    };
+
+};
+
+&adc {
+    #address-cells = <1>;
+	#size-cells = <0>;
+    status = "okay";
+    channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN0>; 
+		zephyr,resolution = <12>;
+	};
+    channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1_6";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,input-positive = <NRF_SAADC_AIN1>; 
+		zephyr,resolution = <12>;
+	};
+};
+
+&gpiote {
+    status = "okay";
+};
+
+&gpio0 {
+    status = "okay";
+};
+
+&gpio1 {
+    status = "okay";
+};
+
+&i2c1 {
+    compatible = "nordic,nrf-twim";
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    zephyr,concat-buf-size = <512>;
+    pinctrl-0 = <&i2c1_default>;
+    pinctrl-1 = <&i2c1_sleep>;
+    pinctrl-names = "default", "sleep";
+
+
+    bmi270: bmi270@68 {
+        compatible = "bosch,bmi270-plus";
+        reg = <0x68>;
+        status = "okay";
+        int-gpios = <&gpio0 21 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>;
+        invert-x;
+        invert-y;
+    };
+
+    adt7420: adt7420@48 {
+        status = "okay";
+        compatible = "adi,adt7420";
+        label="ADT7420";
+        reg = <0x48>;
+    };
+
+    
+      
+};
+
+&i2c2 {
+    compatible = "nordic,nrf-twim";
+    status = "okay";
+    clock-frequency = <I2C_BITRATE_FAST>;
+    pinctrl-0 = <&i2c2_default>;
+    pinctrl-1 = <&i2c2_sleep>;
+    pinctrl-names = "default", "sleep";
+
+};
+/ {
+	fstab {
+		compatible = "zephyr,fstab";
+		lvgl_lfs: lvgl_lfs {
+			compatible = "zephyr,fstab,littlefs";
+			mount-point = "/lvgl_lfs";
+			partition = <&littlefs_storage>;
+			automount;
+			read-size = <1024>;
+			prog-size = <512>;
+			cache-size = <4096>;
+			lookahead-size = <4096>;
+			block-cycles = <512>;
+		};
+	};
+};
+
+/delete-node/ &storage_partition;
+
+&mx25r64 {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+		littlefs_storage: partition@0 {
+			label = "littlefs_storage";
+			reg = <0x00000000 0x00200000>;
+		};
+		lvgl_raw_partition: partition@200000 {
+			label = "lvgl_raw_partition";
+			reg = <0x00200000 0x00200000>;
+		};
+        storage_partition: partition@400000 {
+            label = "storage_partition";
+            reg = <0x400000 0x100000 >;
+        };
+	};
+};
+
+/ {
+    sram@2007FEFF {
+        compatible = "zephyr,memory-region", "mmio-sram";
+        reg = <0x2007FEFF 0x100>;
+        zephyr,memory-region = "RetainedMem";
+        status = "okay";
+
+        retainedmem {
+            compatible = "zephyr,retained-ram";
+            status = "okay";
+            #address-cells = <1>;
+            #size-cells = <1>;
+
+            retention0: retention@0 {
+                compatible = "zephyr,retention";
+                status = "okay";
+                reg = <0x0 0xFB>;
+                prefix = [04 fa];
+                checksum = <1>;
+            };
+            // Last byte in RAM is for boot mode.
+            // Du to debugger only supports writing 4 bytes at a time
+            // we need to leave a 3 byte gap between the two retention areas.
+            retention1: retention@FF {
+                compatible = "zephyr,retention";
+                status = "okay";
+                reg = <0xFF 0x1>;
+            };
+        };
+    };
+
+    chosen {
+            zephyr,boot-mode = &retention1;
+    };
+};
+
+/*
+* Reduce SRAM0 usage by 256 bytes to account for non-init area.
+* The last 256 bytes of SRAM0 are used for retention memory.
+*/
+&sram0 {
+    reg = <0x20000000 0x7FEFF>;
+};
+
+
+
+
+
+

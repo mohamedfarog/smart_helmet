@@ -1,0 +1,67 @@
+menu "Zephyr Kernel"
+    source "Kconfig.zephyr"
+endmenu
+
+menu "SHIARS Band"
+config APP_VERSION
+    string "Application version"
+    default "1.0.0"
+    help
+      Defines the version of the application.
+endmenu
+
+    menu "boardtype"
+    config USED_BOARD_ID
+        int "used board id configuration"
+        range 0 1
+        default 0
+        help
+           0 - ublox dk board
+           1 - zswatch board
+    endmenu
+
+
+menu "Nordic LED-Button BLE GATT service sample"
+
+config BT_LBS_SECURITY_ENABLED
+	bool "Enable security"
+	default y
+	select BT_SMP
+	select BT_SETTINGS
+	select FLASH
+	select FLASH_PAGE_LAYOUT
+	select FLASH_MAP
+	select ZMS if SOC_FLASH_NRF_RRAM
+	select NVS if !SOC_FLASH_NRF_RRAM
+	select SETTINGS
+	help
+	  "Enable BLE security for the LED-Button service"
+
+endmenu
+
+#  menu "External"
+#         choice EXTERNAL_BOSCH_SENSOR
+#             bool
+#             prompt "Select the function for the Bosch environment sensor."
+#             help
+#                 You have to disable the BME680 option in the Zephyr configuration to enable the Bosch BSEC option.
+#             def_bool EXTERNAL_USE_BOSCH_BME688
+
+#         config EXTERNAL_USE_BOSCH_BSEC
+#             prompt "Use Bosch BSEC library"
+#             depends on !BME680
+#             select BME68X_EXT_IAQ
+
+#         config EXTERNAL_USE_BOSCH_BME688
+#             prompt "Use standard BME680 driver from Zephyr"
+#         endchoice
+#     endmenu
+    
+ rsource "drivers/Kconfig"
+
+
+module = APP
+module-str = APP
+source "subsys/logging/Kconfig.template.log_config"
+
+
